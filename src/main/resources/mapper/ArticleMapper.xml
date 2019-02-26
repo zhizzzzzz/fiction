@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhi.fiction.mapper.ArticleMapper">
+	<resultMap id="BaseResultMap" type="com.zhi.fiction.model.Article">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="title" property="title" jdbcType="VARCHAR" />
+		<result column="chapter" property="chapter" jdbcType="INTEGER" />
+		<result column="chapter_name" property="chapterName" jdbcType="VARCHAR" />
+		<result column="add_time" property="addTime" jdbcType="TIMESTAMP" />
+		<result column="content" property="content" jdbcType="LONGVARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, title, chapter, chapter_name, content, add_time
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		from t_article
+		where id = #{id,jdbcType=BIGINT}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		delete from t_article
+		where id = #{id,jdbcType=BIGINT}
+	</delete>
+	<insert id="insert" parameterType="com.zhi.fiction.model.Article">
+		insert into t_article (id, title, chapter,
+		chapter_name, add_time, content
+		)
+		values (#{id,jdbcType=BIGINT}, #{title,jdbcType=VARCHAR},
+		#{chapter,jdbcType=INTEGER},
+		#{chapterName,jdbcType=VARCHAR}, #{addTime,jdbcType=TIMESTAMP}, #{content,jdbcType=LONGVARCHAR}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="com.zhi.fiction.model.Article">
+		insert into t_article
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="title != null">
+				title,
+			</if>
+			<if test="chapter != null">
+				chapter,
+			</if>
+			<if test="chapterName != null">
+				chapter_name,
+			</if>
+			<if test="addTime != null">
+				add_time,
+			</if>
+			<if test="content != null">
+				content,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=BIGINT},
+			</if>
+			<if test="title != null">
+				#{title,jdbcType=VARCHAR},
+			</if>
+			<if test="chapter != null">
+				#{chapter,jdbcType=INTEGER},
+			</if>
+			<if test="chapterName != null">
+				#{chapterName,jdbcType=VARCHAR},
+			</if>
+			<if test="addTime != null">
+				#{addTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="content != null">
+				#{content,jdbcType=LONGVARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.zhi.fiction.model.Article">
+		update t_article
+		<set>
+			<if test="title != null">
+				title = #{title,jdbcType=VARCHAR},
+			</if>
+			<if test="chapter != null">
+				chapter = #{chapter,jdbcType=INTEGER},
+			</if>
+			<if test="chapterName != null">
+				chapter_name = #{chapterName,jdbcType=VARCHAR},
+			</if>
+			<if test="addTime != null">
+				add_time = #{addTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="content != null">
+				content = #{content,jdbcType=LONGVARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+	<update id="updateByPrimaryKeyWithBLOBs" parameterType="com.zhi.fiction.model.Article">
+		update t_article
+		set title = #{title,jdbcType=VARCHAR},
+		chapter = #{chapter,jdbcType=INTEGER},
+		chapter_name = #{chapterName,jdbcType=VARCHAR},
+		add_time = #{addTime,jdbcType=TIMESTAMP},
+		content = #{content,jdbcType=LONGVARCHAR}
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.zhi.fiction.model.Article">
+		update t_article
+		set title = #{title,jdbcType=VARCHAR},
+		chapter = #{chapter,jdbcType=INTEGER},
+		chapter_name = #{chapterName,jdbcType=VARCHAR},
+		add_time = #{addTime,jdbcType=TIMESTAMP}
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+
+	<sql id="BaseConditions">
+		<where>
+			1=1
+			<if test="chapter != null and chapter != ''">
+				and chapter = #{chapter}
+			</if>
+			<if test="chapterName != null and chapterName != ''">
+				and chapter_name like  CONCAT("%",#{chapterName},"%")
+			</if>
+			<if test="content != null and content != ''">
+				and content like  CONCAT("%",#{content},"%")
+			</if>
+		</where>
+	</sql>
+
+	<insert id="insertBatch" parameterType="java.util.List">
+		insert into t_article
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			title,chapter,chapter_name, add_time, content
+		</trim>
+		values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(
+			#{item.title},
+			#{item.chapter},
+			#{item.chapterName},
+			#{item.addTime},
+			#{item.content}
+			)
+		</foreach>
+		ON DUPLICATE KEY UPDATE add_time=now();
+	</insert>
+	
+	<select id="getMaxChapter" resultType="java.lang.Integer">
+		select max(chapter) from t_article 
+	</select>
+	
+	<select id="countChapter" resultType="java.lang.Integer">
+		select count(*) from t_article 
+	</select>
+	
+	<select id="findList" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List" />
+		from t_article t 
+		<include refid="BaseConditions"/>
+		order by t.chapter desc 
+		<if test="start != null">
+			limit #{start},#{limit}
+		</if>
+	</select>
+	
+	<select id="getCount" resultType="java.lang.Integer">
+		select count(*)
+		from t_article
+		<include refid="BaseConditions"/>
+	</select>
+
+</mapper>
