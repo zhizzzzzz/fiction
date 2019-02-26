@@ -19,12 +19,19 @@ public class CryptUtil {
     /**
      * RSA公钥
      */
-    private static final String publicKey  = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCsUDnLUAvktiSs9EPMw8ZMiS1EoWBbYUXukyR+sZx3pirvleWa3zW1N1KacULEnJZaMg2OjDVihvhb8OFUww2mbBtYgLLOOAJl02T8PWIiPzp8iBKaifzOD3SDNn5jcaDDxL/EANB4C2eRfreyQaSFG+1iwUYH84CRPSJh+QbcLwIDAQAB";
+    private static final String publicKey  = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIrBEmiynT1CUMDfAM/qstClI2/8dbQndAEmhhd"
+                                             + "ph7fmwRNJDn+6LkNAhydcGb8aVT6jpYy8KSWtCe7cqBZeMdkCAwEAAQ==";
 
     /**
      * RSA私钥
      */
-    private static final String privateKey = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAKxQOctQC+S2JKz0Q8zDxkyJLUShYFthRe6TJH6xnHemKu+V5ZrfNbU3UppxQsSclloyDY6MNWKG+Fvw4VTDDaZsG1iAss44AmXTZPw9YiI/OnyIEpqJ/M4PdIM2fmNxoMPEv8QA0HgLZ5F+t7JBpIUb7WLBRgfzgJE9ImH5BtwvAgMBAAECgYAr4dp2DpKY0lIQwbwqf4kWoLCok7hoTSN0GIDoyu6gAe9ZSIFKqaGR3t7oegOY8o/PtIODU+2cg+bn8zZPUcU9uqxnNfo5nVA5WlOhV4ESpyXduPR4+XL5eYDrMdQxTO+r7Vgc4BKtrN3Q+AuxYmO4HjG8xJnvXdix/hzzAY/sQQJBAPHL4L+XNk8Pp+S+mgXmyfUJKL5c4jyvRi++V0rydw2LsQarcCghX/bYbzjJ2yl3xczjij68flQxMifNV5O4rXECQQC2b3c6G1LVEmvNIrExVw0wYqSEcCU8xMn5wBmn4eTTu1w6qIZmPBbzxez1ZEMrHcTkru9UFNey4YzPd1IEz9OfAkEAr6IcGo7H0B3bIniggHDneamxgrUNUG8wWDW2SqZce+ZgLCwTR9MWVcNY5rMZEsIBV5ZgMLnSOW2StP6fApo+wQJAShgBS1c3kBQYNktFve1GDQWzHZrSdNjT0xxjDx0eq6OntKcnVrRG+iDDuXJMGWHQyrQFvZdtd1hFsSkb5ZpmrwJBAMaA4OLmh20gKpBY3tB4R1PkxwKjEKgdi8CM5xRKNCXm41yigi9kOCXDm/Rg87XM5l4aiSWaIeQTO+llqH/eQCM=";
+    private static final String privateKey = "MIIBOwIBAAJBAIrBEmiynT1CUMDfAM/qstClI2/8dbQndAEmhhdph7fmwRNJDn+6\r\n"
+                                             + "LkNAhydcGb8aVT6jpYy8KSWtCe7cqBZeMdkCAwEAAQJABumhgifL355rKYCyqKkX\r\n"
+                                             + "qX9gqZaZQpVomRoTOh1ezpGUOKKe9VNimRPG6zFFj1L1A+hPzamNUln6NZ50dV++\r\n"
+                                             + "tQIhAOpmjVcV0zMeRjbRzGbeubIfEfVkFh0Y0SYlKLeoo21/AiEAl4o/FKTqg+3T\r\n"
+                                             + "+RG5Wjq9mgnnLMAGfUcrqhybE/XoPKcCIQDZbCKyoqXzBqPueZB14yawWC2aRypT\r\n"
+                                             + "9w8ZqOIp6Z0eFQIgboUoDnFcjE2G3E8d5H2UzGROkqeV1AZ1BQMJ4xvkfV8CIQC6\r\n"
+                                             + "5dUA0HUPSFtBuYHX3Oiy0p9b72keWOV/cd/uY65PEg==";
 
     public static void main(String[] args) {
         //公钥加密  
