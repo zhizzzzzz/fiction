@@ -7,10 +7,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -24,6 +25,7 @@ import com.google.common.collect.Lists;
 import com.zhi.fiction.mapper.ArticleMapper;
 import com.zhi.fiction.model.Article;
 import com.zhi.fiction.util.NumberUtil;
+import com.zhi.fiction.util.RedisUtil;
 
 /**
  * @author 作者 yongzhi.zhao:
@@ -35,11 +37,15 @@ public class CrawlerBiz {
 	private ArticleMapper articleMapper;
 
 	private static final int pageSize = 100;
-
+	
+	 private static final ExecutorService ex   = Executors.newFixedThreadPool(1000);
+	
 	// 查询
 	public Object getContent(String id) {
 		return articleMapper.selectByPrimaryKey(Long.valueOf(id));
 	}
+	
+	boolean isEnd = false;
 
 	/**
 	 * 多线程抓取并上传到FTP服务器
@@ -47,10 +53,31 @@ public class CrawlerBiz {
 	 * @return
 	 */
 	@Transactional
-	public int resolveHtmlStr() {
-		List<Article> articleList = getArticleListByConfig("http://www.mushenji.com", "a:matchesOwn([第])", "牧神记");
-		MultiResolve(articleList);
-		return articleList.size();
+	public void resolveHtmlStr() {
+        //生产
+        ex.execute(new Runnable() {
+            @Override
+            public void run() {
+                getArticleListByConfig("http://www.mushenji.com", "a:matchesOwn([第])", "牧神记");
+            }
+        });
+        //消费
+        for (int i = 0; i < 10; i++) {
+            ex.execute(new Runnable() {
+                @Override
+                public void run() {
+                    while (!isEnd) {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                        MultiResolve();
+                    }
+                }
+            });
+        }
 	}
 
 	/**
@@ -78,37 +105,16 @@ public class CrawlerBiz {
 	 * 
 	 * @param articleList
 	 */
-	public void MultiResolve(final List<Article> articleList) {
-		CompletionService<Integer> completionService = new ExecutorCompletionService<Integer>(
-				Executors.newFixedThreadPool(10));
-		int count = articleList.size();
-		List<List<Article>> list = Lists.newArrayList();
-		for (int i = 0; i < count; i++) {
-			if (i % pageSize == 0) {
-				if (articleList.size() - i < pageSize) {
-					list.add(articleList.subList(i, count));
-				} else {
-					list.add(articleList.subList(i, i + pageSize));
-				}
-			}
-		}
-		// 构建生产者
-		for (int i = 0; i < list.size(); i++) {
-			completionService.submit(new Producer(list.get(i), i));
-		}
-
-		int sum = 0;
-		for (long i = 0; i < list.size(); i++) {
-			try {
-				sum += completionService.take().get().intValue();
-				if (sum == list.size()) {
-					return;
-				}
-			} catch (InterruptedException | ExecutionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+	public void MultiResolve() {
+	    
+	    final List<Article> articleList = (List<Article>) RedisUtil.getListValueByJson("article",Article.class);
+	    
+	    if(CollectionUtils.isEmpty(articleList)) {
+	        return;
+	    }
+	    
+		CompletionService<Integer> completionService = new ExecutorCompletionService<Integer>(Executors.newFixedThreadPool(10));
+		completionService.submit(new Producer(articleList, 1));
 	}
 
 	/**
@@ -116,7 +122,7 @@ public class CrawlerBiz {
 	 * 
 	 * @return
 	 */
-	private List<Article> getArticleListByConfig(String baseUrl, String pattern, String title) {
+	private void getArticleListByConfig(String baseUrl, String pattern, String title) {
 		Document doc = getDoc(baseUrl);
 		// 章节链接
 		List<Article> articleList = Lists.newArrayList();
@@ -138,8 +144,9 @@ public class CrawlerBiz {
 			if (set.add(article.getChapter())) {
 				articleList.add(article);
 			}
+			RedisUtil.lpush("article", article);
 		}
-		return articleList;
+		isEnd = true;
 	}
 
 	// callable类型的生产者
@@ -157,9 +164,9 @@ public class CrawlerBiz {
 			for (Article article : articleList) {
 				String content = getDoc(article.getHref()).select("div#BookText>p").outerHtml();
 				article.setContent(content);
+				System.out.println(article.getChapterName()+":"+content.substring(0,10));
 			}
-			// UploadUtil.uploadBatch(articleList);
-			insertBath(articleList);
+			//insertBath(articleList);
 			System.out.println("线程" + i + "执行完毕！" + new Date());
 			return 1;
 		}
@@ -173,4 +180,5 @@ public class CrawlerBiz {
 	public void insertBath(List<Article> articleList) {
 		articleMapper.insertBatch(articleList);
 	}
+
 }

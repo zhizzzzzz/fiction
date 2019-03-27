@@ -38,7 +38,7 @@ public class RedisUtil {
             config.setMaxWaitMillis(1000 * 100);
             // 在borrow一个jedis实例时，是否提前进行validate操作；如果为true，则得到的jedis实例均是可用的；
             config.setTestOnBorrow(true);
-            jedisPool = new JedisPool(config, ADDR, PORT, 3000, AUTH);
+            jedisPool = new JedisPool(config, ADDR, PORT, 3000);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -79,9 +79,9 @@ public class RedisUtil {
      * @param obj
      */
     public static void setObjectValue(String key, Object obj) {
-        Jedis jedis = RedisUtil.getJedis();
+        Jedis jedis = getJedis();
         jedis.set(key.getBytes(), SerializeUtil.serialize(obj));
-        jedis.close();
+        close(jedis);
     }
 
     /**获取Object对象
@@ -89,9 +89,9 @@ public class RedisUtil {
      * @return
      */
     public static Object getObjectValue(String key) {
-        Jedis jedis = RedisUtil.getJedis();
+        Jedis jedis = getJedis();
         Object obj = SerializeUtil.unserialize(jedis.get(key.getBytes()));
-        jedis.close();
+        close(jedis);
         return obj;
     }
 
@@ -100,11 +100,11 @@ public class RedisUtil {
      * @param obj
      */
     public static void setListValue(String key, List<?> list) {
-        Jedis jedis = RedisUtil.getJedis();
+        Jedis jedis = getJedis();
         for (Object li : list) {
             jedis.lpush(key.getBytes(), SerializeUtil.serialize(li));
         }
-        jedis.close();
+        close(jedis);
     }
 
     /**获取List
@@ -119,7 +119,7 @@ public class RedisUtil {
         for (byte[] li : list) {
             realList.add(SerializeUtil.unserialize(li));
         }
-        jedis.close();
+        close(jedis);
         return realList;
     }
 
@@ -130,7 +130,7 @@ public class RedisUtil {
     public static void setObjectValueByJson(String key, Object obj) {
         Jedis jedis = RedisUtil.getJedis();
         jedis.set(key, JSON.toJSONString(obj));
-        jedis.close();
+        close(jedis);
     }
 
     /**获取Object对象
@@ -141,8 +141,18 @@ public class RedisUtil {
     public static Object getObjectValueByJson(String key, Class clazz) {
         Jedis jedis = RedisUtil.getJedis();
         Object obj = JSON.parseObject(jedis.get(key), clazz);
-        jedis.close();
+        close(jedis);
         return obj;
+    }
+    
+    /**存储List-单个
+     * @param key
+     * @param obj
+     */
+    public static void lpush(String key, Object obj) {
+        Jedis jedis = RedisUtil.getJedis();
+        jedis.lpush(key, JSON.toJSONString(obj));
+        close(jedis);
     }
 
     /**存储List
@@ -154,7 +164,7 @@ public class RedisUtil {
         for (Object li : list) {
             jedis.lpush(key, JSON.toJSONString(li));
         }
-        jedis.close();
+        close(jedis);
     }
 
     /**获取List
@@ -170,7 +180,7 @@ public class RedisUtil {
         for (String li : list) {
             realList.add(JSON.parseObject(li, clazz));
         }
-        jedis.close();
+        close(jedis);
         return realList;
     }
 }

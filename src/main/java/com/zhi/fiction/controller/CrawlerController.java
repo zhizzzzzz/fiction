@@ -23,8 +23,8 @@ public class CrawlerController {
 
     @ResponseBody
     @RequestMapping(value = "/findSource")
-    public Object findSource() {
-        return crawlerBiz.resolveHtmlStr();
+    public void findSource() {
+        crawlerBiz.resolveHtmlStr();
     }
 
     @ResponseBody
@@ -32,5 +32,5 @@ public class CrawlerController {
     public Object getContent(String id) {
         return crawlerBiz.getContent(id);
     }
-
+    
 }
