@@ -32,7 +32,7 @@ mybatis:
 #不能用localhost,否则启动报异常:Unresolved address
 #tcp监听的端口
 tcp:
-  port: 8086
+  port: 7001
 # bossGroup的线程数
 boss:
   thread:
