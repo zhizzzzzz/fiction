@@ -154,6 +154,8 @@ public class RedisUtil {
         jedis.lpush(key, JSON.toJSONString(obj));
         close(jedis);
     }
+    
+    
 
     /**存储List
      * @param key

@@ -3,23 +3,21 @@ package com.zhi.fiction.model;
 import java.io.Serializable;
 import java.util.Date;
 
-public class Article implements Serializable{
-    
+public class Article implements Serializable {
+
     private static final long serialVersionUID = -4669259891062048042L;
 
-    private Long    id;
+    private Long              id;
 
-    private String  title;
+    private String            title;
 
-    private Integer chapter;
+    private String            chapter;
 
-    private String  chapterName;
+    private Date              addTime;
 
-    private Date    addTime;
+    private String            content;
 
-    private String  content;
-
-    private String  href;
+    private String            href;
 
     public Long getId() {
         return id;
@@ -37,20 +35,12 @@ public class Article implements Serializable{
         this.title = title;
     }
 
-    public Integer getChapter() {
+    public String getChapter() {
         return chapter;
     }
 
-    public void setChapter(Integer chapter) {
+    public void setChapter(String chapter) {
         this.chapter = chapter;
-    }
-
-    public String getChapterName() {
-        return chapterName;
-    }
-
-    public void setChapterName(String chapterName) {
-        this.chapterName = chapterName;
     }
 
     public Date getAddTime() {

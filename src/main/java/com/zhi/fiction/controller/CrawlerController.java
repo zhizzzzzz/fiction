@@ -27,10 +27,4 @@ public class CrawlerController {
         crawlerBiz.resolveHtmlStr();
     }
 
-    @ResponseBody
-    @RequestMapping(value = "/getContent")
-    public Object getContent(String id) {
-        return crawlerBiz.getContent(id);
-    }
-    
 }

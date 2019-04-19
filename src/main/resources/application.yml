@@ -25,11 +25,29 @@ spring:
         testOnReturn: false
         poolPreparedStatements: true
         maxOpenPreparedStatements: 20
-
+        
+    kafka:
+      producer:
+        retries: 0
+        batch-size: 16384
+        buffer-memory: 33554432
+        key-serializer: org.apache.kafka.common.serialization.StringSerializer
+        value-serializer: org.apache.kafka.common.serialization.StringSerializer
+        bootstrap-servers: lei:2191
+      consumer:
+        bootstrap-servers: lei:2191
+        group-id: fiction
+        auto-offset-reset: earliest
+        enable-auto-commit: true
+        auto-commit-interval: 100
+        key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        
 mybatis:
   mapper-locations: classpath:mapper/*.xml
-
+      
 #不能用localhost,否则启动报异常:Unresolved address
+#netty-config
 #tcp监听的端口
 tcp:
   port: 7001
